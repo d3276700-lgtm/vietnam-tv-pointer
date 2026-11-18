@@ -21,36 +21,47 @@
 <body>
 <main>
   <h1>Вьетнам ТВ</h1>
-  <p id="status">Ищу текущий адрес…</p>
-  <a class="btn go" id="go" href="#">▶ Открыть Вьетнам ТВ</a>
-  <a class="btn apk" href="vietnam-tv.apk" download>⬇ Скачать приложение для Android (телефон, ТВ-приставка)</a>
-  <a class="btn apk" href="VietnamTV-Windows.zip" download>⬇ Скачать программу для Windows (все каналы, ~100 МБ)</a>
-  <p class="muted">Windows: распакуйте архив → откройте папку «Вьетнам ТВ» → запустите VietnamTV.exe. Если Windows скажет «неизвестный издатель» — «Подробнее» → «Выполнить в любом случае».</p>
-  <ol>
-    <li>Нажмите «Скачать приложение».</li>
-    <li>Откройте скачанный файл <b>vietnam-tv.apk</b>.</li>
-    <li>Если телефон спросит про «неизвестные источники» — разрешите установку для браузера.</li>
-    <li>Нажмите «Установить» и откройте «Вьетнам ТВ».</li>
-  </ol>
-  <p class="muted">В приложении работают все каналы. В браузере часть каналов может не открываться.</p>
+  <p id="status">Готовлю скачивание…</p>
+  <div id="win" hidden>
+    <ol>
+      <li>Скачивание началось (около 100 МБ). Дождитесь конца.</li>
+      <li>Нажмите на скачанный архив <b>правой кнопкой → «Извлечь всё» → «Извлечь»</b>.</li>
+      <li>Откройте папку «Вьетнам ТВ» → запустите <b>VietnamTV.exe</b>.</li>
+      <li>Если Windows скажет «защитила ваш компьютер» → «Подробнее» → «Выполнить в любом случае» (только первый раз).</li>
+    </ol>
+    <a class="btn apk" href="VietnamTV-Windows.zip" download>⬇ Если не скачалось — нажмите здесь</a>
+  </div>
+  <div id="android" hidden>
+    <ol>
+      <li>Скачивание началось. Откройте скачанный файл <b>vietnam-tv.apk</b>.</li>
+      <li>Если телефон спросит про «неизвестные источники» — разрешите установку.</li>
+      <li>Нажмите «Установить» и откройте «Вьетнам ТВ».</li>
+    </ol>
+    <a class="btn apk" href="vietnam-tv.apk" download>⬇ Если не скачалось — нажмите здесь</a>
+  </div>
+  <a class="btn go" id="go" href="#">▶ Смотреть в браузере (часть каналов не откроется)</a>
 </main>
 <script>
-// Текущий адрес сервера лежит в server.json этого же хранилища.
-// Сначала спрашиваем API GitHub (обновляется за ~1 мин), запасной — сам файл со странички (до ~10 мин).
+// Открыли ссылку — сразу скачивается нужная программа: Windows → программа, Android → приложение.
+// Остальные (iPhone, Mac, Linux) и наши программы — сразу на сайт. Адрес сайта — из server.json (API GitHub, запасной — файл).
 (function () {
-  var status = document.getElementById('status'), go = document.getElementById('go');
-  // На Android сразу не перекидываем: там обычно пришли скачать приложение. ?stay — тоже не перекидывать.
-  var stay = /[?&]stay\b/.test(location.search) || /Android/i.test(navigator.userAgent);
+  var ua = navigator.userAgent, status = document.getElementById('status'), go = document.getElementById('go');
+  var inOurApp = /VietnamTV/.test(ua), android = /Android/i.test(ua), windows = /Windows/i.test(ua);
+  function download(file, box) {
+    document.getElementById(box).hidden = false;
+    status.textContent = 'Скачиваю…';
+    var a = document.createElement('a'); a.href = file; a.download = file; document.body.appendChild(a); a.click();
+  }
+  if (!inOurApp && windows) download('VietnamTV-Windows.zip', 'win');
+  else if (!inOurApp && android) download('vietnam-tv.apk', 'android');
   function use(url) {
     go.href = url;
-    status.textContent = stay ? 'Сайт готов.' : 'Открываю сайт…';
-    // На компьютере ждём 6 с — успеть нажать «Скачать программу»; в нашей программе — сразу.
-    if (!stay) setTimeout(function () { location.href = url; }, /VietnamTV/.test(navigator.userAgent) ? 0 : 6000);
+    if (inOurApp || (!windows && !android)) { status.textContent = 'Открываю сайт…'; location.href = url; }
   }
   function fromFile() {
     fetch('server.json?t=' + Date.now()).then(function (r) { return r.json(); })
       .then(function (j) { if (j.url) use(j.url); else throw 0; })
-      .catch(function () { status.textContent = 'Сервер сейчас выключен. Попробуйте позже.'; });
+      .catch(function () { go.hidden = true; });
   }
   fetch('https://api.github.com/repos/d3276700-lgtm/vietnam-tv-pointer/contents/server.json',
         { headers: { Accept: 'application/vnd.github.raw' } })
