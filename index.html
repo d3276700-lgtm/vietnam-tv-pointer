@@ -24,12 +24,12 @@
   <p id="status">Готовлю скачивание…</p>
   <div id="win" hidden>
     <ol>
-      <li>Скачивание началось (около 100 МБ). Дождитесь конца.</li>
-      <li>Нажмите на скачанный архив <b>правой кнопкой → «Извлечь всё» → «Извлечь»</b>.</li>
-      <li>Откройте папку «Вьетнам ТВ» → запустите <b>VietnamTV.exe</b>.</li>
+      <li>Скачивание началось (около 75 МБ). Дождитесь конца.</li>
+      <li>Откройте скачанный файл <b>VietnamTV-Setup.exe</b> (внизу или вверху браузера, или в папке «Загрузки»).</li>
       <li>Если Windows скажет «защитила ваш компьютер» → «Подробнее» → «Выполнить в любом случае» (только первый раз).</li>
+      <li>Программа установится сама и откроется. На рабочем столе появится значок <b>«Вьетнам ТВ»</b>.</li>
     </ol>
-    <a class="btn apk" href="VietnamTV-Windows.zip" download>⬇ Если не скачалось — нажмите здесь</a>
+    <a class="btn apk" href="VietnamTV-Setup.exe" download>⬇ Если не скачалось — нажмите здесь</a>
   </div>
   <div id="android" hidden>
     <ol>
@@ -52,7 +52,7 @@
     status.textContent = 'Скачиваю…';
     var a = document.createElement('a'); a.href = file; a.download = file; document.body.appendChild(a); a.click();
   }
-  if (!inOurApp && windows) download('VietnamTV-Windows.zip', 'win');
+  if (!inOurApp && windows) download('VietnamTV-Setup.exe', 'win');
   else if (!inOurApp && android) download('vietnam-tv.apk', 'android');
   function use(url) {
     go.href = url;
