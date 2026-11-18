@@ -44,7 +44,8 @@
   function use(url) {
     go.href = url;
     status.textContent = stay ? 'Сайт готов.' : 'Открываю сайт…';
-    if (!stay) setTimeout(function () { location.href = url; }, 1200);
+    // На компьютере ждём 6 с — успеть нажать «Скачать программу»; в нашей программе — сразу.
+    if (!stay) setTimeout(function () { location.href = url; }, /VietnamTV/.test(navigator.userAgent) ? 0 : 6000);
   }
   function fromFile() {
     fetch('server.json?t=' + Date.now()).then(function (r) { return r.json(); })
