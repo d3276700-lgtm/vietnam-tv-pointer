@@ -37,7 +37,8 @@
 // Сначала спрашиваем API GitHub (обновляется за ~1 мин), запасной — сам файл со странички (до ~10 мин).
 (function () {
   var status = document.getElementById('status'), go = document.getElementById('go');
-  var stay = /[?&]stay\b/.test(location.search); // ?stay — не перекидывать сразу (чтобы скачать приложение)
+  // На Android сразу не перекидываем: там обычно пришли скачать приложение. ?stay — тоже не перекидывать.
+  var stay = /[?&]stay\b/.test(location.search) || /Android/i.test(navigator.userAgent);
   function use(url) {
     go.href = url;
     status.textContent = stay ? 'Сайт готов.' : 'Открываю сайт…';
